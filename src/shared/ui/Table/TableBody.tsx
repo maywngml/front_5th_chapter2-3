@@ -1,6 +1,11 @@
-import { forwardRef } from "react"
+import { Ref } from "react"
 
-export const TableBody = forwardRef(({ className, ...props }, ref) => (
-  <tbody ref={ref} className={`[&_tr:last-child]:border-0 ${className}`} {...props} />
-))
+interface TableBodyProps {
+  className: string
+}
+
+export const TableBody = ({ className, ...props }: TableBodyProps, ref: Ref<HTMLTableSectionElement>) => {
+  return <tbody ref={ref} className={`[&_tr:last-child]:border-0 ${className}`} {...props} />
+}
+
 TableBody.displayName = "TableBody"

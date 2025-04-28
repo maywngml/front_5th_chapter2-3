@@ -1,8 +1,15 @@
-import { forwardRef } from "react"
+import { Ref } from "react"
 
-export const Table = forwardRef(({ className, ...props }, ref) => (
-  <div className="w-full overflow-auto">
-    <table ref={ref} className={`table-fixed w-full caption-bottom text-sm ${className}`} {...props} />
-  </div>
-))
+interface TableProps {
+  className: string
+}
+
+export const Table = ({ className, ...props }: TableProps, ref: Ref<HTMLTableElement>) => {
+  return (
+    <div className="w-full overflow-auto">
+      <table ref={ref} className={`table-fixed w-full caption-bottom text-sm ${className}`} {...props} />
+    </div>
+  )
+}
+
 Table.displayName = "Table"
