@@ -1,6 +1,11 @@
-import { forwardRef } from "react"
+import { Ref } from "react"
 
-export const CardHeader = forwardRef(({ className, ...props }, ref) => (
-  <div ref={ref} className={`flex flex-col space-y-1.5 p-6 ${className}`} {...props} />
-))
+interface CardHeaderProps {
+  className: string
+}
+
+export const CardHeader = ({ className, ...props }: CardHeaderProps, ref: Ref<HTMLDivElement>) => {
+  return <div ref={ref} className={`flex flex-col space-y-1.5 p-6 ${className}`} {...props} />
+}
+
 CardHeader.displayName = "CardHeader"
