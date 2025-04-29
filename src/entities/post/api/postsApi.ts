@@ -1,13 +1,13 @@
 import { fetchApi } from "@/shared/api/fetchApi"
-import type { AddPostResponse, GetPostsResponse, UpdatePostResponse, DeletePostResponse, Post } from "../model/type"
+import type { GetPostsResponse, UpdatePostResponse, DeletePostResponse, Post, NewPost } from "../model/type"
 
 export const getPosts = async (params: string) => {
   const data = await fetchApi<GetPostsResponse>({ method: "GET", url: `/posts${params}` })
   return data
 }
 
-export const addPost = async (newPost: Post) => {
-  const data = await fetchApi<AddPostResponse>({ method: "POST", url: `/posts/add`, body: newPost })
+export const addPost = async (newPost: NewPost) => {
+  const data = await fetchApi<Post>({ method: "POST", url: `/posts/add`, body: newPost })
   return data
 }
 
