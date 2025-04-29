@@ -1,7 +1,7 @@
 import { Ref } from "react"
 
 interface TableCellProps {
-  className: string
+  className?: string
 }
 
 export const TableCell = ({ className, ...props }: TableCellProps, ref: Ref<HTMLTableCellElement>) => {

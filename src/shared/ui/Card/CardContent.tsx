@@ -1,7 +1,7 @@
 import { Ref } from "react"
 
 interface CardContentProps {
-  className: string
+  className?: string
 }
 
 export const CardContent = ({ className, ...props }: CardContentProps, ref: Ref<HTMLDivElement>) => {

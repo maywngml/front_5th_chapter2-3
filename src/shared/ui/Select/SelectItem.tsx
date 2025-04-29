@@ -3,7 +3,7 @@ import * as SelectPrimitive from "@radix-ui/react-select"
 import { Check } from "lucide-react"
 
 interface SelectItemProps {
-  className: string
+  className?: string
   children: ReactNode
   value: string
 }

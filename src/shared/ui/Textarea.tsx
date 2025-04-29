@@ -1,7 +1,7 @@
 import { Ref } from "react"
 
 interface TextareaProps {
-  className: string
+  className?: string
 }
 
 // 텍스트 영역 컴포넌트

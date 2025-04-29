@@ -1,5 +1,5 @@
 interface DialogHeaderProps {
-  className: string
+  className?: string
 }
 
 export const DialogHeader = ({ className, ...props }: DialogHeaderProps) => {

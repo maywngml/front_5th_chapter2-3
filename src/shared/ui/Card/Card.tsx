@@ -1,7 +1,7 @@
 import { Ref } from "react"
 
 interface CardProps {
-  className: string
+  className?: string
 }
 // 카드 컴포넌트
 export const Card = ({ className, ...props }: CardProps, ref: Ref<HTMLDivElement>) => {

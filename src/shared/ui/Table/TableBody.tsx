@@ -1,7 +1,7 @@
 import { Ref } from "react"
 
 interface TableBodyProps {
-  className: string
+  className?: string
 }
 
 export const TableBody = ({ className, ...props }: TableBodyProps, ref: Ref<HTMLTableSectionElement>) => {

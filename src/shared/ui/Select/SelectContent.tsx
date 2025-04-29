@@ -2,7 +2,7 @@ import { Ref, ReactNode } from "react"
 import * as SelectPrimitive from "@radix-ui/react-select"
 
 interface SelectContentProps {
-  className: string
+  className?: string
   children: ReactNode
   position: "popper" | "item-aligned" | undefined
 }

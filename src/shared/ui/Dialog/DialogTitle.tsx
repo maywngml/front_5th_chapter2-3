@@ -2,7 +2,7 @@ import { Ref } from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 
 interface DialogTitleProps {
-  className: string
+  className?: string
 }
 
 export const DialogTitle = ({ className, ...props }: DialogTitleProps, ref: Ref<HTMLHeadingElement>) => {

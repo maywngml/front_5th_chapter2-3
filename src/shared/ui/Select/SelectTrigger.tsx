@@ -3,7 +3,7 @@ import * as SelectPrimitive from "@radix-ui/react-select"
 import { ChevronDown } from "lucide-react"
 
 interface SelectTriggerProps {
-  className: string
+  className?: string
   children: ReactNode
 }
 

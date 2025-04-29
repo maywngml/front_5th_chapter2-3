@@ -1,7 +1,7 @@
 import { HTMLInputTypeAttribute, Ref } from "react"
 
 interface InputProps {
-  className: string
+  className?: string
   type: HTMLInputTypeAttribute
 }
 
@@ -16,4 +16,5 @@ export const Input = ({ className, type, ...props }: InputProps, ref: Ref<HTMLIn
     />
   )
 }
+
 Input.displayName = "Input"

@@ -1,7 +1,7 @@
 import { Ref } from "react"
 
 interface TableHeaderProps {
-  className: string
+  className?: string
 }
 
 export const TableHeader = ({ className, ...props }: TableHeaderProps, ref: Ref<HTMLTableSectionElement>) => {
