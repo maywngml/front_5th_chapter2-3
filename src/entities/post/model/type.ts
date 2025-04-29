@@ -1,3 +1,5 @@
+import type { User } from "@/entities/user/model/type"
+
 export interface Reactions {
   dislikes: number
   likes: number
@@ -6,11 +8,17 @@ export interface Reactions {
 export interface Post {
   id: number
   body: string
-  reactions: Reactions
-  tags: string[]
   title: string
-  userId: number
-  views: number
+  userId: User["id"]
+  reactions?: Reactions
+  tags?: string[]
+  views?: number
+}
+
+export interface NewPost {
+  userId: User["id"]
+  title: string
+  body: string
 }
 
 export interface GetPostsResponse {
@@ -24,7 +32,7 @@ export interface AddPostResponse {
   id: number
   body: string
   title: string
-  userId: number
+  userId: User["id"]
 }
 
 export type UpdatePostResponse = Omit<"Post", "views">
@@ -37,6 +45,6 @@ export interface DeletePostResponse {
   reactions: Reactions
   tags: string[]
   title: string
-  userId: number
+  userId: User["id"]
   views: number
 }
