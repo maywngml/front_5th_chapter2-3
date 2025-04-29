@@ -20,7 +20,7 @@ export const updatePost = async (selectedPost: Post) => {
   return data
 }
 
-export const deletePost = async (postId: Post["id"]) => {
-  const data = await fetchApi<DeletePostResponse>({ method: "DELETE", url: `/posts${postId}` })
+export const deletePost = async (id: Post["id"]) => {
+  const data = await fetchApi<DeletePostResponse>({ method: "DELETE", url: `/posts${id}` })
   return data
 }
