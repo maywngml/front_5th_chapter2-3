@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react"
 import { Edit2, MessageSquare, Plus, Search, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
-import { Card, CardContent, CardHeader, CardTitle } from "../shared/ui/Card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../shared/ui/Dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../shared/ui/Select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../shared/ui/Table"
-import { Button, Input, Loading, Textarea } from "../shared/ui"
-import { usePostsStore } from "@/features/post/model/usePostsStore"
+import { AddPostDialog } from "@/features/post/ui"
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/Card"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/Dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/Table"
+import { Button, Input, Loading, Textarea } from "@/shared/ui"
+import { usePostsStore } from "@/entities/post/model/usePostsStore"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -15,6 +16,7 @@ const PostsManager = () => {
 
   // 상태 관리
   const { posts, setPosts } = usePostsStore()
+
   const [total, setTotal] = useState(0)
   const [skip, setSkip] = useState(parseInt(queryParams.get("skip") || "0"))
   const [limit, setLimit] = useState(parseInt(queryParams.get("limit") || "10"))
@@ -22,20 +24,26 @@ const PostsManager = () => {
   const [selectedPost, setSelectedPost] = useState(null)
   const [sortBy, setSortBy] = useState(queryParams.get("sortBy") || "")
   const [sortOrder, setSortOrder] = useState(queryParams.get("sortOrder") || "asc")
+
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
-  const [newPost, setNewPost] = useState({ title: "", body: "", userId: 1 })
+
   const [loading, setLoading] = useState(false)
   const [tags, setTags] = useState([])
   const [selectedTag, setSelectedTag] = useState(queryParams.get("tag") || "")
   const [comments, setComments] = useState({})
   const [selectedComment, setSelectedComment] = useState(null)
   const [newComment, setNewComment] = useState({ body: "", postId: null, userId: 1 })
+
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false)
   const [showEditCommentDialog, setShowEditCommentDialog] = useState(false)
   const [showPostDetailDialog, setShowPostDetailDialog] = useState(false)
   const [showUserModal, setShowUserModal] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
+
+  const changeShowAddDialog = () => {
+    setShowAddDialog((prevShowAddDialog) => !prevShowAddDialog)
+  }
 
   // URL 업데이트 함수
   const updateURL = () => {
@@ -70,7 +78,6 @@ const PostsManager = () => {
         }))
         setPosts(postsWithUsers)
         setTotal(postsData.total)
-        console.log(postsWithUsers)
       })
       .catch((error) => {
         console.error("게시물 가져오기 오류:", error)
@@ -135,23 +142,6 @@ const PostsManager = () => {
       console.error("태그별 게시물 가져오기 오류:", error)
     }
     setLoading(false)
-  }
-
-  // 게시물 추가
-  const addPost = async () => {
-    try {
-      const response = await fetch("/api/posts/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newPost),
-      })
-      const data = await response.json()
-      setPosts([data, ...posts])
-      setShowAddDialog(false)
-      setNewPost({ title: "", body: "", userId: 1 })
-    } catch (error) {
-      console.error("게시물 추가 오류:", error)
-    }
   }
 
   // 게시물 업데이트
@@ -459,7 +449,7 @@ const PostsManager = () => {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>게시물 관리자</span>
-          <Button onClick={() => setShowAddDialog(true)}>
+          <Button onClick={changeShowAddDialog}>
             <Plus className="w-4 h-4 mr-2" />
             게시물 추가
           </Button>
@@ -554,34 +544,7 @@ const PostsManager = () => {
         </div>
       </CardContent>
 
-      {/* 게시물 추가 대화상자 */}
-      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>새 게시물 추가</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              placeholder="제목"
-              value={newPost.title}
-              onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-            />
-            <Textarea
-              rows={30}
-              placeholder="내용"
-              value={newPost.body}
-              onChange={(e) => setNewPost({ ...newPost, body: e.target.value })}
-            />
-            <Input
-              type="number"
-              placeholder="사용자 ID"
-              value={newPost.userId}
-              onChange={(e) => setNewPost({ ...newPost, userId: Number(e.target.value) })}
-            />
-            <Button onClick={addPost}>게시물 추가</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <AddPostDialog open={showAddDialog} onChangeOpen={changeShowAddDialog} />
 
       {/* 게시물 수정 대화상자 */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
