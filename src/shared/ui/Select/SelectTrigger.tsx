@@ -5,9 +5,10 @@ import { ChevronDown } from "lucide-react"
 interface SelectTriggerProps {
   className?: string
   children: ReactNode
+  ref?: Ref<HTMLButtonElement>
 }
 
-export const SelectTrigger = ({ className, children, ...props }: SelectTriggerProps, ref: Ref<HTMLButtonElement>) => {
+export const SelectTrigger = ({ className, ref, children, ...props }: SelectTriggerProps) => {
   return (
     <SelectPrimitive.Trigger
       ref={ref}

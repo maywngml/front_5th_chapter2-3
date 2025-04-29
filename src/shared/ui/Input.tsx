@@ -1,12 +1,13 @@
 import { HTMLInputTypeAttribute, Ref } from "react"
 
 interface InputProps {
-  className?: string
   type: HTMLInputTypeAttribute
+  className?: string
+  ref?: Ref<HTMLInputElement>
 }
 
 // 입력 컴포넌트
-export const Input = ({ className, type, ...props }: InputProps, ref: Ref<HTMLInputElement>) => {
+export const Input = ({ className, ref, type, ...props }: InputProps) => {
   return (
     <input
       type={type}

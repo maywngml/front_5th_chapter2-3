@@ -2,15 +2,13 @@ import { Ref, ReactNode } from "react"
 import * as SelectPrimitive from "@radix-ui/react-select"
 
 interface SelectContentProps {
-  className?: string
   children: ReactNode
   position: "popper" | "item-aligned" | undefined
+  className?: string
+  ref?: Ref<HTMLDivElement>
 }
 
-export const SelectContent = (
-  { className, children, position = "popper", ...props }: SelectContentProps,
-  ref: Ref<HTMLDivElement>,
-) => {
+export const SelectContent = ({ className, ref, children, position = "popper", ...props }: SelectContentProps) => {
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content

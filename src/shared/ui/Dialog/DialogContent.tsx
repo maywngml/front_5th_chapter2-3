@@ -4,11 +4,12 @@ import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
 
 interface DialogContentProps {
-  className?: string
   children: ReactNode
+  className?: string
+  ref?: Ref<HTMLDivElement>
 }
 
-export const DialogContent = ({ className, children, ...props }: DialogContentProps, ref: Ref<HTMLDivElement>) => {
+export const DialogContent = ({ className, ref, children, ...props }: DialogContentProps) => {
   return (
     <DialogPortal>
       <DialogOverlay className="fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />

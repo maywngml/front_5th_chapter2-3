@@ -2,9 +2,10 @@ import { Ref } from "react"
 
 interface TableHeadProps {
   className?: string
+  ref?: Ref<HTMLTableCellElement>
 }
 
-export const TableHead = ({ className, ...props }: TableHeadProps, ref: Ref<HTMLTableCellElement>) => {
+export const TableHead = ({ className, ref, ...props }: TableHeadProps) => {
   return (
     <th
       ref={ref}

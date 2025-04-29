@@ -3,12 +3,13 @@ import * as SelectPrimitive from "@radix-ui/react-select"
 import { Check } from "lucide-react"
 
 interface SelectItemProps {
-  className?: string
   children: ReactNode
   value: string
+  className?: string
+  ref?: Ref<HTMLDivElement>
 }
 
-export const SelectItem = ({ className, children, ...props }: SelectItemProps, ref: Ref<HTMLDivElement>) => {
+export const SelectItem = ({ className, ref, children, ...props }: SelectItemProps) => {
   return (
     <SelectPrimitive.Item
       ref={ref}
