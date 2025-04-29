@@ -3,7 +3,7 @@ export type Method = "POST" | "GET" | "PUT" | "DELETE" | "PATCH"
 export interface FetchApiParams {
   method: Method
   url: string
-  body?: BodyInit | null | undefined
+  body?: unknown
 }
 
 export interface FetchApiOptions {
