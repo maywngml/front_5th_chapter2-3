@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../shared/ui/D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../shared/ui/Select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../shared/ui/Table"
 import { Button, Input, Loading, Textarea } from "../shared/ui"
+import { usePostsStore } from "@/features/post/model/usePostsStore"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -13,7 +14,7 @@ const PostsManager = () => {
   const queryParams = new URLSearchParams(location.search)
 
   // 상태 관리
-  const [posts, setPosts] = useState([])
+  const { posts, setPosts } = usePostsStore()
   const [total, setTotal] = useState(0)
   const [skip, setSkip] = useState(parseInt(queryParams.get("skip") || "0"))
   const [limit, setLimit] = useState(parseInt(queryParams.get("limit") || "10"))
