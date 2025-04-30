@@ -30,7 +30,7 @@ export const EditCommentDialog = ({ isOpen, onChangeOpen }: EditCommentDialogPro
     if (!selectedComment) return
 
     try {
-      const response = await updateCommentApi(selectedComment)
+      const response = await updateCommentApi(selectedComment.id, { body: selectedComment.body })
       updateComment(response.postId, selectedComment)
       onChangeOpen()
     } catch (error) {

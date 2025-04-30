@@ -18,11 +18,10 @@ export const addComment = async (comment: Omit<Comment, "id" | "likes">) => {
   return data
 }
 
-export const updateComment = async (comment: Comment) => {
-  const body = { body: comment.body }
+export const updateComment = async (id: Comment["id"], body: Partial<Comment>) => {
   const data = await fetchApi<UpdateCommentResponse>({
     method: "PUT",
-    url: `/comments/${comment.id}`,
+    url: `/comments/${id}`,
     body,
   })
   return data
