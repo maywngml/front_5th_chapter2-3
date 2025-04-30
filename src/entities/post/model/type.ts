@@ -35,7 +35,7 @@ export interface AddPostResponse {
   userId: User["id"]
 }
 
-export type UpdatePostResponse = Omit<"Post", "views">
+export type UpdatePostResponse = Post
 
 export interface DeletePostResponse {
   body: string
