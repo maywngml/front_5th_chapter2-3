@@ -2,6 +2,7 @@ import type { FetchApiParams, FetchApiOptions } from "../model/types"
 
 export const fetchApi = async <T>({ method, url, body }: FetchApiParams): Promise<T> => {
   try {
+    const BASE_URL = import.meta.env.DEV ? "/api" : "https://dummyjson.com"
     const options: FetchApiOptions = {
       method: method,
       headers: {
@@ -13,7 +14,7 @@ export const fetchApi = async <T>({ method, url, body }: FetchApiParams): Promis
       options.body = JSON.stringify(body)
     }
 
-    const response = await fetch(`/api${url}`, options)
+    const response = await fetch(`${BASE_URL}${url}`, options)
     const result = await response.json()
 
     if (!response.ok) {
