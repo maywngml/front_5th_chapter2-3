@@ -539,7 +539,7 @@ const PostsManager = () => {
         </div>
       </CardContent>
 
-      <AddPostDialog open={showAddDialog} onChangeOpen={changeShowAddDialog} />
+      <AddPostDialog isOpen={showAddDialog} onChangeOpen={changeShowAddDialog} />
 
       {/* 게시물 수정 대화상자 */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>

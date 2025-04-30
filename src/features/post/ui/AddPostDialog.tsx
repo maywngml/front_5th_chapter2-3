@@ -6,13 +6,13 @@ import { addPost as addPostApi } from "@/entities/post/api/postsApi"
 import { NewPost } from "@/entities/post/model/type"
 
 interface AddPostDialogProps {
-  open: boolean
+  isOpen: boolean
   onChangeOpen: () => void
 }
 
 const initialNewPost = { title: "", body: "", userId: 1 }
 
-export const AddPostDialog = ({ open, onChangeOpen }: AddPostDialogProps) => {
+export const AddPostDialog = ({ isOpen, onChangeOpen }: AddPostDialogProps) => {
   const { addPost } = usePostsStore()
   const [newPost, setNewPost] = useState<NewPost>(initialNewPost)
 
@@ -38,7 +38,7 @@ export const AddPostDialog = ({ open, onChangeOpen }: AddPostDialogProps) => {
 
   /* 게시물 추가 대화상자 */
   return (
-    <Dialog open={open} onOpenChange={onChangeOpen}>
+    <Dialog open={isOpen} onOpenChange={onChangeOpen}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>새 게시물 추가</DialogTitle>
