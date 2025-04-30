@@ -2,13 +2,17 @@ import { useEffect, useState } from "react"
 import { Edit2, MessageSquare, Plus, Search, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { AddPostDialog, EditPostDialog } from "@/features/post/ui"
+import { AddCommentDialog } from "@/features/comment/ui"
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/Card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/Dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/Table"
 import { Button, Input, Loading, Textarea } from "@/shared/ui"
 import { useSelectedPostStore } from "@/features/post/model/useSelectedPostStore"
+import { useNewCommentStore } from "@/features/comment/model/useNewCommentStore"
 import { usePostsStore } from "@/entities/post/model/usePostsStore"
+import { useCommentsStore } from "@/entities/comment/model/useCommentsStore"
+import { Post } from "@/entities/post/model/type"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -18,6 +22,13 @@ const PostsManager = () => {
   // 상태 관리
   const { posts, total, setPosts, updatePost, deletePost } = usePostsStore()
   const { selectedPost, setSelectedPost } = useSelectedPostStore()
+  const {
+    comments,
+    setComments,
+    updateComment: updateCommentStore,
+    deleteComment: deleteCommentStore,
+  } = useCommentsStore()
+  const { updateNewCommentField } = useNewCommentStore()
 
   const [skip, setSkip] = useState(parseInt(queryParams.get("skip") || "0"))
   const [limit, setLimit] = useState(parseInt(queryParams.get("limit") || "10"))
@@ -31,9 +42,7 @@ const PostsManager = () => {
   const [loading, setLoading] = useState(false)
   const [tags, setTags] = useState([])
   const [selectedTag, setSelectedTag] = useState(queryParams.get("tag") || "")
-  const [comments, setComments] = useState({})
   const [selectedComment, setSelectedComment] = useState(null)
-  const [newComment, setNewComment] = useState({ body: "", postId: null, userId: 1 })
 
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false)
   const [showEditCommentDialog, setShowEditCommentDialog] = useState(false)
@@ -49,6 +58,11 @@ const PostsManager = () => {
   // 게시글 수정 대화상자 보기 설정
   const changeShowEditDialog = () => {
     setShowEditDialog((prevShowEditDialog) => !prevShowEditDialog)
+  }
+
+  // 댓글 수정 대화상자 보기 설정
+  const changeShowAddCommentDialog = () => {
+    setShowAddCommentDialog((prevShowAddCommentDialog) => !prevShowAddCommentDialog)
   }
 
   // URL 업데이트 함수
@@ -159,35 +173,21 @@ const PostsManager = () => {
     }
   }
 
+  // 댓글 추가 버튼 클릭 핸들러
+  const handleClickAddComment = (postId: Post["id"]) => {
+    updateNewCommentField("postId", postId)
+    changeShowAddCommentDialog()
+  }
+
   // 댓글 가져오기
   const fetchComments = async (postId) => {
     if (comments[postId]) return // 이미 불러온 댓글이 있으면 다시 불러오지 않음
     try {
       const response = await fetch(`/api/comments/post/${postId}`)
       const data = await response.json()
-      setComments((prev) => ({ ...prev, [postId]: data.comments }))
+      setComments(postId, data.comments)
     } catch (error) {
       console.error("댓글 가져오기 오류:", error)
-    }
-  }
-
-  // 댓글 추가
-  const addComment = async () => {
-    try {
-      const response = await fetch("/api/comments/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newComment),
-      })
-      const data = await response.json()
-      setComments((prev) => ({
-        ...prev,
-        [data.postId]: [...(prev[data.postId] || []), data],
-      }))
-      setShowAddCommentDialog(false)
-      setNewComment({ body: "", postId: null, userId: 1 })
-    } catch (error) {
-      console.error("댓글 추가 오류:", error)
     }
   }
 
@@ -200,10 +200,7 @@ const PostsManager = () => {
         body: JSON.stringify({ body: selectedComment.body }),
       })
       const data = await response.json()
-      setComments((prev) => ({
-        ...prev,
-        [data.postId]: prev[data.postId].map((comment) => (comment.id === data.id ? data : comment)),
-      }))
+      updateCommentStore(data.postId, selectedComment)
       setShowEditCommentDialog(false)
     } catch (error) {
       console.error("댓글 업데이트 오류:", error)
@@ -216,10 +213,7 @@ const PostsManager = () => {
       await fetch(`/api/comments/${id}`, {
         method: "DELETE",
       })
-      setComments((prev) => ({
-        ...prev,
-        [postId]: prev[postId].filter((comment) => comment.id !== id),
-      }))
+      deleteCommentStore(postId, id)
     } catch (error) {
       console.error("댓글 삭제 오류:", error)
     }
@@ -391,8 +385,7 @@ const PostsManager = () => {
         <Button
           size="sm"
           onClick={() => {
-            setNewComment((prev) => ({ ...prev, postId }))
-            setShowAddCommentDialog(true)
+            handleClickAddComment(postId)
           }}
         >
           <Plus className="w-3 h-3 mr-1" />
@@ -531,25 +524,12 @@ const PostsManager = () => {
         </div>
       </CardContent>
 
+      {/* 게시글 추가 대화상자 */}
       <AddPostDialog isOpen={showAddDialog} onChangeOpen={changeShowAddDialog} />
+      {/* 게시글 수정 대화상자 */}
       <EditPostDialog isOpen={showEditDialog} onChangeOpen={changeShowEditDialog} />
-
       {/* 댓글 추가 대화상자 */}
-      <Dialog open={showAddCommentDialog} onOpenChange={setShowAddCommentDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>새 댓글 추가</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Textarea
-              placeholder="댓글 내용"
-              value={newComment.body}
-              onChange={(e) => setNewComment({ ...newComment, body: e.target.value })}
-            />
-            <Button onClick={addComment}>댓글 추가</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <AddCommentDialog isOpen={showAddCommentDialog} onChangeOpen={changeShowAddCommentDialog} />
 
       {/* 댓글 수정 대화상자 */}
       <Dialog open={showEditCommentDialog} onOpenChange={setShowEditCommentDialog}>
