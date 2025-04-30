@@ -4,10 +4,14 @@ import type { Post } from "@/entities/post/model/type"
 export interface Comment {
   body: string
   id: number
-  likes: number
-  postId: Post["id"]
-  userId: User["id"]
+  postId: Post["id"] | null
+  likes?: number
+  userId?: User["id"]
   user?: User
+}
+
+export interface Comments {
+  [key: Post["id"]]: Comment[]
 }
 
 export interface AddCommentResponse {
