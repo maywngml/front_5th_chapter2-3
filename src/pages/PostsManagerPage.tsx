@@ -2,21 +2,24 @@ import { useEffect, useState } from "react"
 import { Edit2, MessageSquare, Plus, Search, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
 import { AddPostDialog, PostDetailDialog, EditPostDialog } from "@/features/post/ui"
 import { AddCommentDialog, EditCommentDialog } from "@/features/comment/ui"
+import { UserDialog } from "@/features/user/ui"
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/Card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/Dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/Table"
 import { Button, Input, Loading } from "@/shared/ui"
 import { useSelectedPostStore } from "@/features/post/model/useSelectedPostStore"
+import { useSelectedUserStore } from "@/features/user/model"
 import { useUrlParams } from "@/features/post/lib"
 import { usePostsStore } from "@/entities/post/model/usePostsStore"
 import { useCommentsStore } from "@/entities/comment/model/useCommentsStore"
+import { getUser } from "@/entities/user/api/userApi"
 
 const PostsManager = () => {
   // 상태 관리
   const { posts, total, setPosts, deletePost } = usePostsStore()
   const { setSelectedPost } = useSelectedPostStore()
   const { comments, setComments } = useCommentsStore()
+  const { setSelectedUser } = useSelectedUserStore()
 
   const { skip, limit, search: searchQuery, tag: selectedTag, sortBy, sortOrder, updateParams } = useUrlParams()
 
@@ -28,8 +31,8 @@ const PostsManager = () => {
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false)
   const [showEditCommentDialog, setShowEditCommentDialog] = useState(false)
   const [showPostDetailDialog, setShowPostDetailDialog] = useState(false)
-  const [showUserModal, setShowUserModal] = useState(false)
-  const [selectedUser, setSelectedUser] = useState(null)
+  const [showUserDialog, setShowUserDialog] = useState(false)
+  const [selectedUser] = useState(null)
 
   // 게시글 추가 대화상자 보기 설정
   const changeShowAddDialog = () => {
@@ -54,6 +57,11 @@ const PostsManager = () => {
   // 상세 게시글 대화상자 보기 설정
   const changeShowPostDetailDialog = () => {
     setShowPostDetailDialog((prevShowPostDetailDialog) => !prevShowPostDetailDialog)
+  }
+
+  // 사용자 대화상자 보기 설정
+  const changeShowUserDialog = () => {
+    setShowUserDialog((prevShowUserDialog) => !prevShowUserDialog)
   }
 
   // 게시물 가져오기
@@ -174,10 +182,9 @@ const PostsManager = () => {
   // 사용자 모달 열기
   const openUserModal = async (user) => {
     try {
-      const response = await fetch(`/api/users/${user.id}`)
-      const userData = await response.json()
-      setSelectedUser(userData)
-      setShowUserModal(true)
+      const response = await getUser(user.id)
+      setSelectedUser(response)
+      changeShowUserDialog()
     } catch (error) {
       console.error("사용자 정보 가져오기 오류:", error)
     }
@@ -405,40 +412,8 @@ const PostsManager = () => {
         changeShowAddCommentDialog={changeShowAddCommentDialog}
         changeShowEditCommentDialog={changeShowEditCommentDialog}
       />
-
-      {/* 사용자 모달 */}
-      <Dialog open={showUserModal} onOpenChange={setShowUserModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>사용자 정보</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <img src={selectedUser?.image} alt={selectedUser?.username} className="w-24 h-24 rounded-full mx-auto" />
-            <h3 className="text-xl font-semibold text-center">{selectedUser?.username}</h3>
-            <div className="space-y-2">
-              <p>
-                <strong>이름:</strong> {selectedUser?.firstName} {selectedUser?.lastName}
-              </p>
-              <p>
-                <strong>나이:</strong> {selectedUser?.age}
-              </p>
-              <p>
-                <strong>이메일:</strong> {selectedUser?.email}
-              </p>
-              <p>
-                <strong>전화번호:</strong> {selectedUser?.phone}
-              </p>
-              <p>
-                <strong>주소:</strong> {selectedUser?.address?.address}, {selectedUser?.address?.city},{" "}
-                {selectedUser?.address?.state}
-              </p>
-              <p>
-                <strong>직장:</strong> {selectedUser?.company?.name} - {selectedUser?.company?.title}
-              </p>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* 사용자 정보 대화상자 */}
+      <UserDialog isOpen={showUserDialog} onChangeOpen={changeShowUserDialog} />
     </Card>
   )
 }
