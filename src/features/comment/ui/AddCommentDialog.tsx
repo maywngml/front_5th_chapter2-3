@@ -5,12 +5,12 @@ import { useNewCommentStore } from "../model/useNewCommentStore"
 import { useCommentsStore } from "@/entities/comment/model/useCommentsStore"
 import { addComment as addCommentApi } from "@/entities/comment/api/commentsApi"
 
-interface AddPostDialogProps {
+interface AddCommentDialogProps {
   isOpen: boolean
   onChangeOpen: () => void
 }
 
-export const AddCommentDialog = ({ isOpen, onChangeOpen }: AddPostDialogProps) => {
+export const AddCommentDialog = ({ isOpen, onChangeOpen }: AddCommentDialogProps) => {
   const { newComment, resetNewComment, updateNewCommentField } = useNewCommentStore()
   const { addComment } = useCommentsStore()
 
