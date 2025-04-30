@@ -22,13 +22,13 @@ export const updateComment = async (comment: Comment) => {
   const body = { body: comment.body }
   const data = await fetchApi<UpdateCommentResponse>({
     method: "PUT",
-    url: `/api/comments/${comment.id}`,
+    url: `/comments/${comment.id}`,
     body,
   })
   return data
 }
 
 export const deleteComment = async (id: Comment["id"]) => {
-  const data = await fetchApi<DeleteCommentResponse>({ method: "DELETE", url: `/api/comments/${id}` })
+  const data = await fetchApi<DeleteCommentResponse>({ method: "DELETE", url: `/comments/${id}` })
   return data
 }
