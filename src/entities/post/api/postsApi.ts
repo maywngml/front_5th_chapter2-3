@@ -14,7 +14,7 @@ export const addPost = async (newPost: NewPost) => {
 export const updatePost = async (selectedPost: Post) => {
   const data = await fetchApi<UpdatePostResponse>({
     method: "PATCH",
-    url: `/api/posts/${selectedPost.id}`,
+    url: `/posts/${selectedPost.id}`,
     body: selectedPost,
   })
   return data
