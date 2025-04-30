@@ -1,6 +1,7 @@
 export { Button } from "./Button"
 export { Card, CardContent, CardHeader, CardTitle } from "./Card"
 export { Dialog, DialogContent, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger } from "./Dialog"
+export { HighlightedText } from "./HighlightedText"
 export { Input } from "./Input"
 export { Loading } from "./Loading"
 export { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "./Select"
