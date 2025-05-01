@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react"
 import { Plus } from "lucide-react"
-import { AddPostDialog, PostDetailDialog, EditPostDialog, PostFilterSection, PostTableRow } from "@/features/post/ui"
+import {
+  AddPostDialog,
+  PostDetailDialog,
+  EditPostDialog,
+  PostFilterSection,
+  PostPagination,
+  PostTableRow,
+} from "@/features/post/ui"
 import { AddCommentDialog, EditCommentDialog } from "@/features/comment/ui"
 import { UserDialog } from "@/features/user/ui"
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/Card"
@@ -98,6 +105,7 @@ const PostsManager = () => {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-4">
+          {/* 게시글 검색, 필터 영역 */}
           <PostFilterSection
             changePostsLoading={setLoading}
             fetchPosts={fetchPosts}
@@ -107,30 +115,7 @@ const PostsManager = () => {
           {loading ? <Loading /> : renderPostTable()}
 
           {/* 페이지네이션 */}
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <span>표시</span>
-              <Select value={limit.toString()} onValueChange={(value) => updateParams({ limit: Number(value) })}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="10" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="30">30</SelectItem>
-                </SelectContent>
-              </Select>
-              <span>항목</span>
-            </div>
-            <div className="flex gap-2">
-              <Button disabled={skip === 0} onClick={() => updateParams({ skip: Math.max(0, skip - limit) })}>
-                이전
-              </Button>
-              <Button disabled={skip + limit >= total} onClick={() => updateParams({ skip: skip + limit })}>
-                다음
-              </Button>
-            </div>
-          </div>
+          <PostPagination />
         </div>
       </CardContent>
 
