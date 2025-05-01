@@ -1,44 +1,36 @@
-import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react"
+import { ChangeEvent, KeyboardEvent } from "react"
 import { Search } from "lucide-react"
 import { Input } from "@/shared/ui"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select"
 import { usePostsFetcher } from "../model/usePostsFetcher"
+import { useGetTags, useFetchSearchedPosts } from "../model/usePostsQuery"
 import { useUrlParams } from "../lib"
 import { usePostsStore } from "@/entities/post/model/usePostsStore"
-import { getTags, fetchSearchedPosts } from "@/entities/post/api/postsApi"
-import type { Tag } from "@/entities/post/model/type"
+import type { GetPostsResponse } from "@/entities/post/model/type"
 
 export const PostFilterSection = () => {
+  const { data: tags } = useGetTags()
+  const { mutate: fetchSearchedPosts } = useFetchSearchedPosts()
   const { setIsLoading, setPosts } = usePostsStore()
   const { fetchPostsWithUser, fetchPostsByTagWithUser } = usePostsFetcher()
   const { tag: selectedTag, sortBy, sortOrder, search: searchQuery, updateParams } = useUrlParams()
-  const [tags, setTags] = useState<Tag[]>([])
-
-  // 태그 가져오기
-  const fetchTags = async () => {
-    try {
-      const data = await getTags()
-      setTags(data)
-    } catch (e) {
-      console.error("태그 가져오기 오류:", e)
-    }
-  }
 
   // 게시물 검색
-  const searchPosts = async () => {
+  const searchPosts = () => {
     if (!searchQuery) {
       fetchPostsWithUser()
       return
     }
     setIsLoading(true)
-    try {
-      const data = await fetchSearchedPosts(searchQuery)
-      setPosts(data.posts)
-    } catch (e) {
-      console.error("게시물 검색 오류:", e)
-    } finally {
-      setIsLoading(false)
-    }
+
+    fetchSearchedPosts(searchQuery, {
+      onSuccess: (data: GetPostsResponse) => {
+        setPosts(data.posts)
+      },
+      onSettled: () => {
+        setIsLoading(false)
+      },
+    })
   }
 
   const handleChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
@@ -66,10 +58,6 @@ export const PostFilterSection = () => {
     }
   }
 
-  useEffect(() => {
-    fetchTags()
-  }, [])
-
   return (
     <div className="flex gap-4">
       <div className="flex-1">
@@ -90,7 +78,7 @@ export const PostFilterSection = () => {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">모든 태그</SelectItem>
-          {tags.map((tag) => (
+          {tags?.map((tag) => (
             <SelectItem key={tag.url} value={tag.slug}>
               {tag.slug}
             </SelectItem>

@@ -2,27 +2,27 @@ import { ChangeEvent, useState } from "react"
 import { usePostDialog } from "@/features/post/model/PostDialogContext"
 import { Input, Textarea, Button } from "@/shared/ui"
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/shared/ui/Dialog"
+import { useAddPost } from "../model/usePostsQuery"
 import { usePostsStore } from "@/entities/post/model/usePostsStore"
-import { addPost as addPostApi } from "@/entities/post/api/postsApi"
-import { NewPost } from "@/entities/post/model/type"
+import { NewPost, AddPostResponse } from "@/entities/post/model/type"
 
 const initialNewPost = { title: "", body: "", userId: 1 }
 
 export const AddPostDialog = () => {
+  const { mutate: addPostMutate } = useAddPost()
   const { isAddPostDialogOpen, closeAddPostDialog } = usePostDialog()
   const { addPost } = usePostsStore()
   const [newPost, setNewPost] = useState<NewPost>(initialNewPost)
 
   // 게시물 추가
-  const handleClick = async () => {
-    try {
-      const response = await addPostApi(newPost)
-      addPost(response)
-      setNewPost(initialNewPost)
-      closeAddPostDialog()
-    } catch (error) {
-      console.error("게시물 추가 오류:", error)
-    }
+  const handleClick = () => {
+    addPostMutate(newPost, {
+      onSuccess: (data: AddPostResponse) => {
+        addPost(data)
+        setNewPost(initialNewPost)
+        closeAddPostDialog()
+      },
+    })
   }
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

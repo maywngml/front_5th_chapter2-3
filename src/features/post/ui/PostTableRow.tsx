@@ -5,19 +5,22 @@ import { useUrlParams } from "../lib"
 import { usePostDialog } from "../model/PostDialogContext"
 import { useUserDialog } from "@/features/user/model/UserDialogContext"
 import { useSelectedPostStore } from "../model/useSelectedPostStore"
+import { useDeletePost } from "../model/usePostsQuery"
+import { useGetComments } from "@/features/comment/model/useCommentsQuery"
 import { useSelectedUserStore } from "@/features/user/model"
 import { usePostsStore } from "@/entities/post/model/usePostsStore"
 import { useCommentsStore } from "@/entities/comment/model/useCommentsStore"
-import { deletePost as deletePostApi } from "@/entities/post/api/postsApi"
 import { getUser } from "@/entities/user/api/usersApi"
-import { getComments } from "@/entities/comment/api/commentsApi"
 import type { Post } from "@/entities/post/model/type"
+import type { GetCommentsResponse } from "@/entities/comment/model/type"
 
 interface PostTableRowProps {
   post: Post
 }
 
 export const PostTableRow = ({ post }: PostTableRowProps) => {
+  const { mutate: deletePostMutate } = useDeletePost()
+  const { mutate: getCommentsMutate } = useGetComments()
   const { deletePost } = usePostsStore()
   const { comments, setComments } = useCommentsStore()
   const { openPostDetailDialog, openEditPostDialog } = usePostDialog()
@@ -28,14 +31,14 @@ export const PostTableRow = ({ post }: PostTableRowProps) => {
   const { id, title, tags, author, reactions } = post
 
   // 댓글 불러오기
-  const fetchComments = async () => {
+  const fetchComments = () => {
     if (comments[id]) return // 이미 불러온 댓글이 있으면 다시 불러오지 않음
-    try {
-      const response = await getComments(id)
-      setComments(id, response.comments)
-    } catch (error) {
-      console.error("댓글 가져오기 오류:", error)
-    }
+
+    getCommentsMutate(id, {
+      onSuccess: (data: GetCommentsResponse) => {
+        setComments(id, data.comments)
+      },
+    })
   }
 
   // 제목의 태그 클릭
@@ -69,12 +72,11 @@ export const PostTableRow = ({ post }: PostTableRowProps) => {
 
   // 게시물 삭제
   const handleClickDelete = async () => {
-    try {
-      await deletePostApi(id)
-      deletePost(id)
-    } catch (error) {
-      console.error("게시물 삭제 오류:", error)
-    }
+    deletePostMutate(id, {
+      onSuccess: () => {
+        deletePost(id)
+      },
+    })
   }
 
   return (

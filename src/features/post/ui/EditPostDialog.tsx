@@ -2,13 +2,14 @@ import { Input, Textarea, Button } from "@/shared/ui"
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/shared/ui/Dialog"
 import { useSelectedPostStore } from "../model/useSelectedPostStore"
 import { usePostDialog } from "../model/PostDialogContext"
+import { useUpdatePost } from "../model/usePostsQuery"
 import { usePostsStore } from "@/entities/post/model/usePostsStore"
-import { updatePost as updatePostApi } from "@/entities/post/api/postsApi"
 import { ChangeEvent } from "react"
-import type { Post } from "@/entities/post/model/type"
+import type { Post, UpdatePostResponse } from "@/entities/post/model/type"
 
 // 게시물 수정 대화상자
 export const EditPostDialog = () => {
+  const { mutate: updatePostMutate } = useUpdatePost()
   const { selectedPost, updateSelectedPostField } = useSelectedPostStore()
   const { isEditPostDialogOpen, closeEditPostDialog } = usePostDialog()
   const { updatePost } = usePostsStore()
@@ -25,13 +26,12 @@ export const EditPostDialog = () => {
   const handleClick = async () => {
     if (!selectedPost) return
 
-    try {
-      const response = await updatePostApi(selectedPost)
-      updatePost(response)
-      closeEditPostDialog()
-    } catch (error) {
-      console.error("게시물 업데이트 오류:", error)
-    }
+    updatePostMutate(selectedPost, {
+      onSuccess: (data: UpdatePostResponse) => {
+        updatePost(data)
+        closeEditPostDialog()
+      },
+    })
   }
 
   return (
