@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 
 import { getComments, addComment, updateComment, deleteComment } from "@/entities/comment/api/commentsApi"
 import type { Comment } from "@/entities/comment/model/type"
