@@ -1,26 +1,24 @@
 import { useEffect, useState } from "react"
-import { Plus, Search } from "lucide-react"
-import { AddPostDialog, PostDetailDialog, EditPostDialog, PostTableRow } from "@/features/post/ui"
+import { Plus } from "lucide-react"
+import { AddPostDialog, PostDetailDialog, EditPostDialog, PostFilterSection, PostTableRow } from "@/features/post/ui"
 import { AddCommentDialog, EditCommentDialog } from "@/features/comment/ui"
 import { UserDialog } from "@/features/user/ui"
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/Card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select"
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/shared/ui/Table"
-import { Button, Input, Loading } from "@/shared/ui"
+import { Button, Loading } from "@/shared/ui"
 import { usePostDialog } from "@/features/post/model/PostDialogContext"
 import { useUrlParams } from "@/features/post/lib"
 import { getPostsWithUser, getPostsByTagWithUser } from "@/features/post/api/postsApi"
 import { usePostsStore } from "@/entities/post/model/usePostsStore"
-import { getTags, fetchSearchedPosts } from "@/entities/post/api/postsApi"
 
 const PostsManager = () => {
   // 상태 관리
   const { posts, total, setPosts } = usePostsStore()
   const { openAddPostDialog } = usePostDialog()
 
-  const { skip, limit, search: searchQuery, tag: selectedTag, sortBy, sortOrder, updateParams } = useUrlParams()
+  const { skip, limit, tag: selectedTag, sortBy, sortOrder, updateParams } = useUrlParams()
 
-  const [tags, setTags] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
 
   const [showUserDialog, setShowUserDialog] = useState(false)
@@ -43,33 +41,6 @@ const PostsManager = () => {
     }
   }
 
-  // 태그 가져오기
-  const fetchTags = async () => {
-    try {
-      const data = await getTags()
-      console.log(data)
-      setTags(data)
-    } catch (error) {
-      console.error("태그 가져오기 오류:", error)
-    }
-  }
-
-  // 게시물 검색
-  const searchPosts = async () => {
-    if (!searchQuery) {
-      fetchPosts()
-      return
-    }
-    setLoading(true)
-    try {
-      const data = await fetchSearchedPosts(searchQuery)
-      setPosts(data.posts)
-    } catch (error) {
-      console.error("게시물 검색 오류:", error)
-    }
-    setLoading(false)
-  }
-
   // 태그별 게시물 가져오기
   const fetchPostsByTag = async (tag: string) => {
     if (!tag || tag === "all") {
@@ -85,10 +56,6 @@ const PostsManager = () => {
     }
     setLoading(false)
   }
-
-  useEffect(() => {
-    fetchTags()
-  }, [])
 
   useEffect(() => {
     if (selectedTag) {
@@ -131,61 +98,11 @@ const PostsManager = () => {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-4">
-          {/* 검색 및 필터 컨트롤 */}
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="게시물 검색..."
-                  className="pl-8"
-                  value={searchQuery}
-                  onChange={(e) => updateParams({ search: e.target.value })}
-                  onKeyPress={(e) => e.key === "Enter" && searchPosts()}
-                />
-              </div>
-            </div>
-            <Select
-              value={selectedTag}
-              onValueChange={(value) => {
-                fetchPostsByTag(value)
-                updateParams({ tag: value })
-              }}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="태그 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">모든 태그</SelectItem>
-                {tags.map((tag) => (
-                  <SelectItem key={tag.url} value={tag.slug}>
-                    {tag.slug}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={sortBy} onValueChange={(value) => updateParams({ sortBy: value })}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="정렬 기준" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">없음</SelectItem>
-                <SelectItem value="id">ID</SelectItem>
-                <SelectItem value="title">제목</SelectItem>
-                <SelectItem value="reactions">반응</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={sortOrder} onValueChange={(value) => updateParams({ sortOrder: value })}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="정렬 순서" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="asc">오름차순</SelectItem>
-                <SelectItem value="desc">내림차순</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
+          <PostFilterSection
+            changePostsLoading={setLoading}
+            fetchPosts={fetchPosts}
+            fetchPostsByTag={fetchPostsByTag}
+          />
           {/* 게시물 테이블 */}
           {loading ? <Loading /> : renderPostTable()}
 

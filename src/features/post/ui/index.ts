@@ -1,4 +1,5 @@
 export { AddPostDialog } from "./AddPostDialog"
 export { EditPostDialog } from "./EditPostDialog"
 export { PostDetailDialog } from "./PostDetailDialog"
+export { PostFilterSection } from "./PostFilterSection"
 export { PostTableRow } from "./PostTableRow"
