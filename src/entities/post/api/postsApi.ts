@@ -1,7 +1,19 @@
 import { fetchApi } from "@/shared/api/fetchApi"
-import type { GetPostsResponse, UpdatePostResponse, DeletePostResponse, Post, NewPost } from "../model/type"
+import type {
+  GetPostsResponse,
+  UpdatePostResponse,
+  DeletePostResponse,
+  GetTagsResponse,
+  Post,
+  NewPost,
+} from "../model/type"
 
 export const getPosts = async (params: string) => {
+  const data = await fetchApi<GetPostsResponse>({ method: "GET", url: `/posts${params}` })
+  return data
+}
+
+export const fetchSearchedPosts = async (params: string) => {
   const data = await fetchApi<GetPostsResponse>({ method: "GET", url: `/posts${params}` })
   return data
 }
@@ -22,5 +34,10 @@ export const updatePost = async (selectedPost: Post) => {
 
 export const deletePost = async (id: Post["id"]) => {
   const data = await fetchApi<DeletePostResponse>({ method: "DELETE", url: `/posts${id}` })
+  return data
+}
+
+export const getTags = async () => {
+  const data = await fetchApi<GetTagsResponse>({ method: "GET", url: "posts/tags" })
   return data
 }
