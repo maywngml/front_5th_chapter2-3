@@ -66,32 +66,33 @@ const PostsManager = () => {
   }, [skip, limit, sortBy, sortOrder, selectedTag])
 
   return (
-    <Card className="w-full max-w-6xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>게시물 관리자</span>
-          <Button onClick={openAddPostDialog}>
-            <Plus className="w-4 h-4 mr-2" />
-            게시물 추가
-          </Button>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col gap-4">
-          {/* 게시글 검색, 필터 영역 */}
-          <PostFilterSection
-            changePostsLoading={setLoading}
-            fetchPosts={fetchPosts}
-            fetchPostsByTag={fetchPostsByTag}
-          />
-          {/* 게시물 테이블 */}
-          {loading ? <Loading /> : <PostTable />}
+    <div>
+      <Card className="w-full max-w-6xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>게시물 관리자</span>
+            <Button onClick={openAddPostDialog}>
+              <Plus className="w-4 h-4 mr-2" />
+              게시물 추가
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4">
+            {/* 게시글 검색, 필터 영역 */}
+            <PostFilterSection
+              changePostsLoading={setLoading}
+              fetchPosts={fetchPosts}
+              fetchPostsByTag={fetchPostsByTag}
+            />
+            {/* 게시물 테이블 */}
+            {loading ? <Loading /> : <PostTable />}
 
-          {/* 페이지네이션 */}
-          <PostPagination />
-        </div>
-      </CardContent>
-
+            {/* 페이지네이션 */}
+            <PostPagination />
+          </div>
+        </CardContent>
+      </Card>
       {/* 게시글 추가 대화상자 */}
       <AddPostDialog />
       {/* 게시글 수정 대화상자 */}
@@ -104,7 +105,7 @@ const PostsManager = () => {
       <PostDetailDialog />
       {/* 사용자 정보 대화상자 */}
       <UserDialog isOpen={showUserDialog} onChangeOpen={changeShowUserDialog} />
-    </Card>
+    </div>
   )
 }
 
