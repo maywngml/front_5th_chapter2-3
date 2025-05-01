@@ -23,7 +23,7 @@ export const EditPostDialog = () => {
   }
 
   // 게시물 업데이트
-  const handleClick = async () => {
+  const handleClick = () => {
     if (!selectedPost) return
 
     updatePostMutate(selectedPost, {

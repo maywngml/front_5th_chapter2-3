@@ -22,7 +22,7 @@ export const CommentItem = ({ comment, postId }: CommentItemProps) => {
   const searchQuery = useUrlParams().search
   const { id, user, body, likes } = comment
 
-  const handleClickLike = async () => {
+  const handleClickLike = () => {
     const body = { likes: (likes || 0) + 1 }
 
     updateCommentMutate(
