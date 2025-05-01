@@ -2,19 +2,15 @@ import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react"
 import { Search } from "lucide-react"
 import { Input } from "@/shared/ui"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select"
+import { usePostsFetcher } from "../model/usePostsFetcher"
 import { useUrlParams } from "../lib"
 import { usePostsStore } from "@/entities/post/model/usePostsStore"
 import { getTags, fetchSearchedPosts } from "@/entities/post/api/postsApi"
 import type { Tag } from "@/entities/post/model/type"
 
-interface PostFilterSectionProps {
-  changePostsLoading: (isLoading: boolean) => void
-  fetchPosts: () => void
-  fetchPostsByTag: (tag: string) => void
-}
-
-export const PostFilterSection = ({ changePostsLoading, fetchPosts, fetchPostsByTag }: PostFilterSectionProps) => {
-  const { setPosts } = usePostsStore()
+export const PostFilterSection = () => {
+  const { setIsLoading, setPosts } = usePostsStore()
+  const { fetchPostsWithUser, fetchPostsByTagWithUser } = usePostsFetcher()
   const { tag: selectedTag, sortBy, sortOrder, search: searchQuery, updateParams } = useUrlParams()
   const [tags, setTags] = useState<Tag[]>([])
 
@@ -31,17 +27,18 @@ export const PostFilterSection = ({ changePostsLoading, fetchPosts, fetchPostsBy
   // 게시물 검색
   const searchPosts = async () => {
     if (!searchQuery) {
-      fetchPosts()
+      fetchPostsWithUser()
       return
     }
-    changePostsLoading(true)
+    setIsLoading(true)
     try {
       const data = await fetchSearchedPosts(searchQuery)
       setPosts(data.posts)
     } catch (e) {
       console.error("게시물 검색 오류:", e)
+    } finally {
+      setIsLoading(false)
     }
-    changePostsLoading(false)
   }
 
   const handleChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
@@ -55,7 +52,7 @@ export const PostFilterSection = ({ changePostsLoading, fetchPosts, fetchPostsBy
   }
 
   const handleChangeTag = (value: string) => {
-    fetchPostsByTag(value)
+    fetchPostsByTagWithUser(value)
     updateParams({ tag: value })
   }
 
