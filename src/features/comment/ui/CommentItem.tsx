@@ -41,7 +41,7 @@ export const CommentItem = ({ comment, postId }: CommentItemProps) => {
     openEditCommentDialog()
   }
 
-  const handleClickDelete = async () => {
+  const handleClickDelete = () => {
     deleteCommentMutate(id, {
       onSuccess: () => {
         deleteComment(postId, id)

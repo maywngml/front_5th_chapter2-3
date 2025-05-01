@@ -24,7 +24,7 @@ export const EditCommentDialog = () => {
   }
 
   // 댓글 업데이트
-  const handleClick = async () => {
+  const handleClick = () => {
     if (!selectedComment) return
 
     updateCommentMutate(
