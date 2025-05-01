@@ -2,7 +2,7 @@ import { fetchApi } from "@/shared/api/fetchApi"
 import type { User, GetUserResponse, GetUsersResponse } from "../model/type"
 
 export const getUsers = async (params: string) => {
-  const data = await fetchApi<GetUsersResponse>({ method: "GET", url: `/users/${params}` })
+  const data = await fetchApi<GetUsersResponse>({ method: "GET", url: `/users${params}` })
   return data
 }
 
