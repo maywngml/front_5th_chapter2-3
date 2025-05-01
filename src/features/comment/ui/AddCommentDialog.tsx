@@ -3,10 +3,12 @@ import { Textarea, Button } from "@/shared/ui"
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/shared/ui/Dialog"
 import { useNewCommentStore } from "../model/useNewCommentStore"
 import { useCommentDialog } from "../model/CommentDialogContext"
+import { useAddComment } from "../model/useCommentsQuery"
+import type { AddCommentResponse } from "@/entities/comment/model/type"
 import { useCommentsStore } from "@/entities/comment/model/useCommentsStore"
-import { addComment as addCommentApi } from "@/entities/comment/api/commentsApi"
 
 export const AddCommentDialog = () => {
+  const { mutate: addCommentMutate } = useAddComment()
   const { isAddCommentDialogOpen, closeAddCommentDialog } = useCommentDialog()
   const { newComment, resetNewComment, updateNewCommentField } = useNewCommentStore()
   const { addComment } = useCommentsStore()
@@ -18,15 +20,14 @@ export const AddCommentDialog = () => {
   }
 
   // 댓글 추가
-  const handleClick = async () => {
-    try {
-      const response = await addCommentApi(newComment)
-      addComment(response.postId, response)
-      closeAddCommentDialog()
-      resetNewComment()
-    } catch (error) {
-      console.error("댓글 추가 오류:", error)
-    }
+  const handleClick = () => {
+    addCommentMutate(newComment, {
+      onSuccess: (data: AddCommentResponse) => {
+        addComment(data.postId, data)
+        closeAddCommentDialog()
+        resetNewComment()
+      },
+    })
   }
 
   return (

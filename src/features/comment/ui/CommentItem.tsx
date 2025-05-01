@@ -1,14 +1,11 @@
 import { Edit2, ThumbsUp, Trash2 } from "lucide-react"
 import { Button, HighlightedText } from "@/shared/ui"
 import { useUrlParams } from "../../post/lib"
-import {
-  updateComment as updateCommentApi,
-  deleteComment as deleteCommentApi,
-} from "@/entities/comment/api/commentsApi"
 import { useSelectedCommentStore } from "../model/useSelectedCommentStore"
 import { useCommentDialog } from "../model/CommentDialogContext"
+import { useUpdateComment, useDeleteComment } from "../model/useCommentsQuery"
 import { useCommentsStore } from "@/entities/comment/model/useCommentsStore"
-import type { Comment } from "@/entities/comment/model/type"
+import type { Comment, UpdateCommentResponse } from "@/entities/comment/model/type"
 import type { Post } from "@/entities/post/model/type"
 
 interface CommentItemProps {
@@ -17,6 +14,8 @@ interface CommentItemProps {
 }
 
 export const CommentItem = ({ comment, postId }: CommentItemProps) => {
+  const { mutate: updateCommentMutate } = useUpdateComment()
+  const { mutate: deleteCommentMutate } = useDeleteComment()
   const { openEditCommentDialog } = useCommentDialog()
   const { updateComment, deleteComment } = useCommentsStore()
   const { setSelectedComment } = useSelectedCommentStore()
@@ -24,14 +23,17 @@ export const CommentItem = ({ comment, postId }: CommentItemProps) => {
   const { id, user, body, likes } = comment
 
   const handleClickLike = async () => {
-    try {
-      const body = { likes: (likes || 0) + 1 }
-      const response = await updateCommentApi(id, body)
-      const newComment = { ...response, likes: (likes || 0) + 1 }
-      updateComment(postId, newComment)
-    } catch (error) {
-      console.error("댓글 좋아요 오류:", error)
-    }
+    const body = { likes: (likes || 0) + 1 }
+
+    updateCommentMutate(
+      { id, body },
+      {
+        onSuccess: (data: UpdateCommentResponse) => {
+          const newComment = { ...data, likes: (likes || 0) + 1 }
+          updateComment(postId, newComment)
+        },
+      },
+    )
   }
 
   const handleClickEdit = () => {
@@ -40,12 +42,11 @@ export const CommentItem = ({ comment, postId }: CommentItemProps) => {
   }
 
   const handleClickDelete = async () => {
-    try {
-      await deleteCommentApi(id)
-      deleteComment(postId, id)
-    } catch (error) {
-      console.error("댓글 삭제 오류:", error)
-    }
+    deleteCommentMutate(id, {
+      onSuccess: () => {
+        deleteComment(postId, id)
+      },
+    })
   }
 
   return (

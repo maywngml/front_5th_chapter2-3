@@ -3,12 +3,13 @@ import { Textarea, Button } from "@/shared/ui"
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/shared/ui/Dialog"
 import { useSelectedCommentStore } from "../model/useSelectedCommentStore"
 import { useCommentDialog } from "../model/CommentDialogContext"
+import { useUpdateComment } from "../model/useCommentsQuery"
 import { useCommentsStore } from "@/entities/comment/model/useCommentsStore"
-import { updateComment as updateCommentApi } from "@/entities/comment/api/commentsApi"
-import type { Comment } from "@/entities/comment/model/type"
+import type { Comment, UpdateCommentResponse } from "@/entities/comment/model/type"
 
 // 댓글 수정 대화 상자
 export const EditCommentDialog = () => {
+  const { mutate: updateCommentMutate } = useUpdateComment()
   const { isEditCommentDialogOpen, closeEditCommentDialog } = useCommentDialog()
   const { selectedComment, updateSelectedCommentField } = useSelectedCommentStore()
   const { updateComment } = useCommentsStore()
@@ -26,13 +27,15 @@ export const EditCommentDialog = () => {
   const handleClick = async () => {
     if (!selectedComment) return
 
-    try {
-      const response = await updateCommentApi(selectedComment.id, { body: selectedComment.body })
-      updateComment(response.postId, selectedComment)
-      closeEditCommentDialog()
-    } catch (error) {
-      console.error("게시물 업데이트 오류:", error)
-    }
+    updateCommentMutate(
+      { id: selectedComment.id, body: { body: selectedComment.body } },
+      {
+        onSuccess: (data: UpdateCommentResponse) => {
+          updateComment(data.postId, selectedComment)
+          closeEditCommentDialog()
+        },
+      },
+    )
   }
 
   return (
