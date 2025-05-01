@@ -73,3 +73,14 @@ export interface GetUserResponse {
   username: string
   weight: number
 }
+
+export type UserWithoutFullName = Omit<User, "fullName"> & {
+  image: string
+}
+
+export interface GetUsersResponse {
+  limit: number
+  skip: number
+  total: number
+  users: UserWithoutFullName[]
+}
