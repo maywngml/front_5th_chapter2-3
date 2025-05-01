@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/Table"
 import { Button, Input, Loading } from "@/shared/ui"
 import { useSelectedPostStore } from "@/features/post/model/useSelectedPostStore"
+import { usePostDialog } from "@/features/post/model/PostDialogContext"
 import { useSelectedUserStore } from "@/features/user/model"
 import { useUrlParams } from "@/features/post/lib"
 import { usePostsStore } from "@/entities/post/model/usePostsStore"
@@ -20,29 +21,16 @@ const PostsManager = () => {
   const { setSelectedPost } = useSelectedPostStore()
   const { comments, setComments } = useCommentsStore()
   const { setSelectedUser } = useSelectedUserStore()
+  const { openAddPostDialog, openEditPostDialog, openPostDetailDialog } = usePostDialog()
 
   const { skip, limit, search: searchQuery, tag: selectedTag, sortBy, sortOrder, updateParams } = useUrlParams()
 
   const [tags, setTags] = useState([])
   const [loading, setLoading] = useState(false)
 
-  const [showAddDialog, setShowAddDialog] = useState(false)
-  const [showEditDialog, setShowEditDialog] = useState(false)
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false)
   const [showEditCommentDialog, setShowEditCommentDialog] = useState(false)
-  const [showPostDetailDialog, setShowPostDetailDialog] = useState(false)
   const [showUserDialog, setShowUserDialog] = useState(false)
-  const [selectedUser] = useState(null)
-
-  // 게시글 추가 대화상자 보기 설정
-  const changeShowAddDialog = () => {
-    setShowAddDialog((prevShowAddDialog) => !prevShowAddDialog)
-  }
-
-  // 게시글 수정 대화상자 보기 설정
-  const changeShowEditDialog = () => {
-    setShowEditDialog((prevShowEditDialog) => !prevShowEditDialog)
-  }
 
   // 댓글 추가 대화상자 보기 설정
   const changeShowAddCommentDialog = () => {
@@ -52,11 +40,6 @@ const PostsManager = () => {
   // 댓글 수정 대화상자 보기 설정
   const changeShowEditCommentDialog = () => {
     setShowEditCommentDialog((prevShowEditCommentDialog) => !prevShowEditCommentDialog)
-  }
-
-  // 상세 게시글 대화상자 보기 설정
-  const changeShowPostDetailDialog = () => {
-    setShowPostDetailDialog((prevShowPostDetailDialog) => !prevShowPostDetailDialog)
   }
 
   // 사용자 대화상자 보기 설정
@@ -176,7 +159,7 @@ const PostsManager = () => {
   const openPostDetail = (post) => {
     setSelectedPost(post)
     fetchComments(post.id)
-    setShowPostDetailDialog(true)
+    openPostDetailDialog()
   }
 
   // 사용자 모달 열기
@@ -282,7 +265,7 @@ const PostsManager = () => {
                   size="sm"
                   onClick={() => {
                     setSelectedPost(post)
-                    setShowEditDialog(true)
+                    openEditPostDialog(true)
                   }}
                 >
                   <Edit2 className="w-4 h-4" />
@@ -303,7 +286,7 @@ const PostsManager = () => {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>게시물 관리자</span>
-          <Button onClick={changeShowAddDialog}>
+          <Button onClick={openAddPostDialog}>
             <Plus className="w-4 h-4 mr-2" />
             게시물 추가
           </Button>
@@ -398,17 +381,15 @@ const PostsManager = () => {
       </CardContent>
 
       {/* 게시글 추가 대화상자 */}
-      <AddPostDialog isOpen={showAddDialog} onChangeOpen={changeShowAddDialog} />
+      <AddPostDialog />
       {/* 게시글 수정 대화상자 */}
-      <EditPostDialog isOpen={showEditDialog} onChangeOpen={changeShowEditDialog} />
+      <EditPostDialog />
       {/* 댓글 추가 대화상자 */}
       <AddCommentDialog isOpen={showAddCommentDialog} onChangeOpen={changeShowAddCommentDialog} />
       {/* 댓글 수정 대화상자 */}
       <EditCommentDialog isOpen={showEditCommentDialog} onChangeOpen={changeShowEditCommentDialog} />
       {/* 게시물 상세 보기 대화상자 */}
       <PostDetailDialog
-        isOpen={showPostDetailDialog}
-        onChangeOpen={changeShowPostDetailDialog}
         changeShowAddCommentDialog={changeShowAddCommentDialog}
         changeShowEditCommentDialog={changeShowEditCommentDialog}
       />

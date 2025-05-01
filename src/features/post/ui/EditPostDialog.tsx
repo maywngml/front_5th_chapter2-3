@@ -1,19 +1,16 @@
 import { Input, Textarea, Button } from "@/shared/ui"
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/shared/ui/Dialog"
 import { useSelectedPostStore } from "../model/useSelectedPostStore"
+import { usePostDialog } from "../model/PostDialogContext"
 import { usePostsStore } from "@/entities/post/model/usePostsStore"
 import { updatePost as updatePostApi } from "@/entities/post/api/postsApi"
 import { ChangeEvent } from "react"
 import type { Post } from "@/entities/post/model/type"
 
-export interface EditPostDialogProps {
-  isOpen: boolean
-  onChangeOpen: () => void
-}
-
 // 게시물 수정 대화상자
-export const EditPostDialog = ({ isOpen, onChangeOpen }: EditPostDialogProps) => {
+export const EditPostDialog = () => {
   const { selectedPost, updateSelectedPostField } = useSelectedPostStore()
+  const { isEditPostDialogOpen, closeEditPostDialog } = usePostDialog()
   const { updatePost } = usePostsStore()
 
   // input, textarea 수정 핸들러 함수
@@ -31,14 +28,14 @@ export const EditPostDialog = ({ isOpen, onChangeOpen }: EditPostDialogProps) =>
     try {
       const response = await updatePostApi(selectedPost)
       updatePost(response)
-      onChangeOpen()
+      closeEditPostDialog()
     } catch (error) {
       console.error("게시물 업데이트 오류:", error)
     }
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onChangeOpen}>
+    <Dialog open={isEditPostDialogOpen} onOpenChange={closeEditPostDialog}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>게시물 수정</DialogTitle>

@@ -1,18 +1,15 @@
 import { ChangeEvent, useState } from "react"
+import { usePostDialog } from "@/features/post/model/PostDialogContext"
 import { Input, Textarea, Button } from "@/shared/ui"
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/shared/ui/Dialog"
 import { usePostsStore } from "@/entities/post/model/usePostsStore"
 import { addPost as addPostApi } from "@/entities/post/api/postsApi"
 import { NewPost } from "@/entities/post/model/type"
 
-interface AddPostDialogProps {
-  isOpen: boolean
-  onChangeOpen: () => void
-}
-
 const initialNewPost = { title: "", body: "", userId: 1 }
 
-export const AddPostDialog = ({ isOpen, onChangeOpen }: AddPostDialogProps) => {
+export const AddPostDialog = () => {
+  const { isAddPostDialogOpen, closeAddPostDialog } = usePostDialog()
   const { addPost } = usePostsStore()
   const [newPost, setNewPost] = useState<NewPost>(initialNewPost)
 
@@ -22,7 +19,7 @@ export const AddPostDialog = ({ isOpen, onChangeOpen }: AddPostDialogProps) => {
       const response = await addPostApi(newPost)
       addPost(response)
       setNewPost(initialNewPost)
-      onChangeOpen()
+      closeAddPostDialog()
     } catch (error) {
       console.error("게시물 추가 오류:", error)
     }
@@ -38,7 +35,7 @@ export const AddPostDialog = ({ isOpen, onChangeOpen }: AddPostDialogProps) => {
 
   /* 게시물 추가 대화상자 */
   return (
-    <Dialog open={isOpen} onOpenChange={onChangeOpen}>
+    <Dialog open={isAddPostDialogOpen} onOpenChange={closeAddPostDialog}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>새 게시물 추가</DialogTitle>
