@@ -14,7 +14,7 @@ export const getPosts = async (params: string) => {
 }
 
 export const getPostsByTag = async (tag: string) => {
-  const data = await fetchApi<GetPostsResponse>({ method: "GET", url: `/posts/tag${tag}` })
+  const data = await fetchApi<GetPostsResponse>({ method: "GET", url: `/posts/tag/${tag}` })
   return data
 }
 
