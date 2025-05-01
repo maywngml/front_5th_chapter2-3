@@ -2,17 +2,14 @@ import { ChangeEvent } from "react"
 import { Textarea, Button } from "@/shared/ui"
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/shared/ui/Dialog"
 import { useSelectedCommentStore } from "../model/useSelectedCommentStore"
+import { useCommentDialog } from "../model/CommentDialogContext"
 import { useCommentsStore } from "@/entities/comment/model/useCommentsStore"
 import { updateComment as updateCommentApi } from "@/entities/comment/api/commentsApi"
 import type { Comment } from "@/entities/comment/model/type"
 
-interface EditCommentDialogProps {
-  isOpen: boolean
-  onChangeOpen: () => void
-}
-
 // 댓글 수정 대화 상자
-export const EditCommentDialog = ({ isOpen, onChangeOpen }: EditCommentDialogProps) => {
+export const EditCommentDialog = () => {
+  const { isEditCommentDialogOpen, closeEditCommentDialog } = useCommentDialog()
   const { selectedComment, updateSelectedCommentField } = useSelectedCommentStore()
   const { updateComment } = useCommentsStore()
 
@@ -32,14 +29,14 @@ export const EditCommentDialog = ({ isOpen, onChangeOpen }: EditCommentDialogPro
     try {
       const response = await updateCommentApi(selectedComment.id, { body: selectedComment.body })
       updateComment(response.postId, selectedComment)
-      onChangeOpen()
+      closeEditCommentDialog()
     } catch (error) {
       console.error("게시물 업데이트 오류:", error)
     }
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onChangeOpen}>
+    <Dialog open={isEditCommentDialogOpen} onOpenChange={closeEditCommentDialog}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>댓글 수정</DialogTitle>

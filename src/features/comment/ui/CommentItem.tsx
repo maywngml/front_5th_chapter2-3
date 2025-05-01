@@ -5,21 +5,22 @@ import {
   updateComment as updateCommentApi,
   deleteComment as deleteCommentApi,
 } from "@/entities/comment/api/commentsApi"
-import { useCommentsStore } from "@/entities/comment/model/useCommentsStore"
 import { useSelectedCommentStore } from "../model/useSelectedCommentStore"
+import { useCommentDialog } from "../model/CommentDialogContext"
+import { useCommentsStore } from "@/entities/comment/model/useCommentsStore"
 import type { Comment } from "@/entities/comment/model/type"
 import type { Post } from "@/entities/post/model/type"
 
 interface CommentItemProps {
   comment: Comment
   postId: Post["id"]
-  changeShowEditCommentDialog: () => void
 }
 
-export const CommentItem = ({ comment, postId, changeShowEditCommentDialog }: CommentItemProps) => {
-  const searchQuery = useUrlParams().search
+export const CommentItem = ({ comment, postId }: CommentItemProps) => {
+  const { openEditCommentDialog } = useCommentDialog()
   const { updateComment, deleteComment } = useCommentsStore()
   const { setSelectedComment } = useSelectedCommentStore()
+  const searchQuery = useUrlParams().search
   const { id, user, body, likes } = comment
 
   const handleClickLike = async () => {
@@ -35,7 +36,7 @@ export const CommentItem = ({ comment, postId, changeShowEditCommentDialog }: Co
 
   const handleClickEdit = () => {
     setSelectedComment(comment)
-    changeShowEditCommentDialog()
+    openEditCommentDialog()
   }
 
   const handleClickDelete = async () => {

@@ -2,15 +2,12 @@ import { ChangeEvent } from "react"
 import { Textarea, Button } from "@/shared/ui"
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/shared/ui/Dialog"
 import { useNewCommentStore } from "../model/useNewCommentStore"
+import { useCommentDialog } from "../model/CommentDialogContext"
 import { useCommentsStore } from "@/entities/comment/model/useCommentsStore"
 import { addComment as addCommentApi } from "@/entities/comment/api/commentsApi"
 
-interface AddCommentDialogProps {
-  isOpen: boolean
-  onChangeOpen: () => void
-}
-
-export const AddCommentDialog = ({ isOpen, onChangeOpen }: AddCommentDialogProps) => {
+export const AddCommentDialog = () => {
+  const { isAddCommentDialogOpen, closeAddCommentDialog } = useCommentDialog()
   const { newComment, resetNewComment, updateNewCommentField } = useNewCommentStore()
   const { addComment } = useCommentsStore()
 
@@ -25,7 +22,7 @@ export const AddCommentDialog = ({ isOpen, onChangeOpen }: AddCommentDialogProps
     try {
       const response = await addCommentApi(newComment)
       addComment(response.postId, response)
-      onChangeOpen()
+      closeAddCommentDialog()
       resetNewComment()
     } catch (error) {
       console.error("댓글 추가 오류:", error)
@@ -33,7 +30,7 @@ export const AddCommentDialog = ({ isOpen, onChangeOpen }: AddCommentDialogProps
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onChangeOpen}>
+    <Dialog open={isAddCommentDialogOpen} onOpenChange={closeAddCommentDialog}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>새 댓글 추가</DialogTitle>

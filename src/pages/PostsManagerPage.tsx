@@ -23,19 +23,7 @@ const PostsManager = () => {
   const [tags, setTags] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
 
-  const [showAddCommentDialog, setShowAddCommentDialog] = useState(false)
-  const [showEditCommentDialog, setShowEditCommentDialog] = useState(false)
   const [showUserDialog, setShowUserDialog] = useState(false)
-
-  // 댓글 추가 대화상자 보기 설정
-  const changeShowAddCommentDialog = () => {
-    setShowAddCommentDialog((prevShowAddCommentDialog) => !prevShowAddCommentDialog)
-  }
-
-  // 댓글 수정 대화상자 보기 설정
-  const changeShowEditCommentDialog = () => {
-    setShowEditCommentDialog((prevShowEditCommentDialog) => !prevShowEditCommentDialog)
-  }
 
   // 사용자 대화상자 보기 설정
   const changeShowUserDialog = () => {
@@ -234,14 +222,11 @@ const PostsManager = () => {
       {/* 게시글 수정 대화상자 */}
       <EditPostDialog />
       {/* 댓글 추가 대화상자 */}
-      <AddCommentDialog isOpen={showAddCommentDialog} onChangeOpen={changeShowAddCommentDialog} />
+      <AddCommentDialog />
       {/* 댓글 수정 대화상자 */}
-      <EditCommentDialog isOpen={showEditCommentDialog} onChangeOpen={changeShowEditCommentDialog} />
+      <EditCommentDialog />
       {/* 게시물 상세 보기 대화상자 */}
-      <PostDetailDialog
-        changeShowAddCommentDialog={changeShowAddCommentDialog}
-        changeShowEditCommentDialog={changeShowEditCommentDialog}
-      />
+      <PostDetailDialog />
       {/* 사용자 정보 대화상자 */}
       <UserDialog isOpen={showUserDialog} onChangeOpen={changeShowUserDialog} />
     </Card>

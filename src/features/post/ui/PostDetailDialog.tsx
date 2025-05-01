@@ -1,19 +1,11 @@
 import { HighlightedText } from "@/shared/ui"
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/shared/ui/Dialog"
 import { CommentList } from "@/features/comment/ui"
+import { usePostDialog } from "../model/PostDialogContext"
 import { useUrlParams } from "../lib"
 import { useSelectedPostStore } from "../model/useSelectedPostStore"
-import { usePostDialog } from "../model/PostDialogContext"
 
-interface PostDetailDialogProps {
-  changeShowAddCommentDialog: () => void
-  changeShowEditCommentDialog: () => void
-}
-
-export const PostDetailDialog = ({
-  changeShowAddCommentDialog,
-  changeShowEditCommentDialog,
-}: PostDetailDialogProps) => {
+export const PostDetailDialog = () => {
   const { selectedPost } = useSelectedPostStore()
   const { isPostDetailDialogOpen, closePostDetailDialog } = usePostDialog()
   const searchQuery = useUrlParams().search
@@ -30,13 +22,7 @@ export const PostDetailDialog = ({
           <p>
             <HighlightedText text={selectedPost?.body} highlight={searchQuery} />
           </p>
-          {selectedPost && (
-            <CommentList
-              postId={selectedPost.id}
-              changeShowAddCommentDialog={changeShowAddCommentDialog}
-              changeShowEditCommentDialog={changeShowEditCommentDialog}
-            />
-          )}
+          {selectedPost && <CommentList postId={selectedPost.id} />}
         </div>
       </DialogContent>
     </Dialog>

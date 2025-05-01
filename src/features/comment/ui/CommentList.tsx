@@ -2,24 +2,24 @@ import { Plus } from "lucide-react"
 import { Button } from "@/shared/ui"
 import { CommentItem } from "./CommentItem"
 import { useNewCommentStore } from "@/features/comment/model/useNewCommentStore"
+import { useCommentDialog } from "../model/CommentDialogContext"
 import { useCommentsStore } from "@/entities/comment/model/useCommentsStore"
 import type { Post } from "@/entities/post/model/type"
 import type { Comment } from "@/entities/comment/model/type"
 
 interface CommentListProps {
   postId: Post["id"]
-  changeShowAddCommentDialog: () => void
-  changeShowEditCommentDialog: () => void
 }
 
-export const CommentList = ({ postId, changeShowAddCommentDialog, changeShowEditCommentDialog }: CommentListProps) => {
+export const CommentList = ({ postId }: CommentListProps) => {
+  const { openAddCommentDialog } = useCommentDialog()
   const { comments } = useCommentsStore()
   const { updateNewCommentField } = useNewCommentStore()
 
   // 댓글 추가 버튼 클릭 핸들러
   const handleClickAddComment = () => {
     updateNewCommentField("postId", postId)
-    changeShowAddCommentDialog()
+    openAddCommentDialog()
   }
 
   return (
@@ -32,9 +32,7 @@ export const CommentList = ({ postId, changeShowAddCommentDialog, changeShowEdit
         </Button>
       </div>
       <div className="space-y-1">
-        {comments[postId]?.map((comment: Comment) => (
-          <CommentItem comment={comment} postId={postId} changeShowEditCommentDialog={changeShowEditCommentDialog} />
-        ))}
+        {comments[postId]?.map((comment: Comment) => <CommentItem comment={comment} postId={postId} />)}
       </div>
     </div>
   )
