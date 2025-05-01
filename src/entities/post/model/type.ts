@@ -1,4 +1,4 @@
-import type { User, GetUserResponse } from "@/entities/user/model/type"
+import type { User, UserWithoutFullName, GetUserResponse } from "@/entities/user/model/type"
 
 export interface Reactions {
   dislikes: number
@@ -10,7 +10,7 @@ export interface Post {
   body: string
   title: string
   userId: User["id"]
-  author?: GetUserResponse
+  author?: UserWithoutFullName
   reactions?: Reactions
   tags?: string[]
   views?: number
