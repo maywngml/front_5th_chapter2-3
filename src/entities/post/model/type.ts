@@ -10,6 +10,7 @@ export interface Post {
   body: string
   title: string
   userId: User["id"]
+  author?: GetUserResponse
   reactions?: Reactions
   tags?: string[]
   views?: number
