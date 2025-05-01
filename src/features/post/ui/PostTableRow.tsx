@@ -6,11 +6,11 @@ import { usePostDialog } from "../model/PostDialogContext"
 import { useUserDialog } from "@/features/user/model/UserDialogContext"
 import { useSelectedPostStore } from "../model/useSelectedPostStore"
 import { useDeletePost } from "../model/usePostsQuery"
+import { useUser } from "@/features/user/model/useUsersQuery"
 import { useGetComments } from "@/features/comment/model/useCommentsQuery"
 import { useSelectedUserStore } from "@/features/user/model"
 import { usePostsStore } from "@/entities/post/model/usePostsStore"
 import { useCommentsStore } from "@/entities/comment/model/useCommentsStore"
-import { getUser } from "@/entities/user/api/usersApi"
 import type { Post } from "@/entities/post/model/type"
 import type { GetCommentsResponse } from "@/entities/comment/model/type"
 
@@ -21,6 +21,7 @@ interface PostTableRowProps {
 export const PostTableRow = ({ post }: PostTableRowProps) => {
   const { mutate: deletePostMutate } = useDeletePost()
   const { mutate: getCommentsMutate } = useGetComments()
+  const { mutate: getUserMutate } = useUser()
   const { deletePost } = usePostsStore()
   const { comments, setComments } = useCommentsStore()
   const { openPostDetailDialog, openEditPostDialog } = usePostDialog()
@@ -47,14 +48,13 @@ export const PostTableRow = ({ post }: PostTableRowProps) => {
   }
 
   // 사용자 모달 열기
-  const handleClickAuthor = async () => {
-    try {
-      const response = await getUser(id)
-      setSelectedUser(response)
-      openUserDialog()
-    } catch (error) {
-      console.error("사용자 정보 가져오기 오류:", error)
-    }
+  const handleClickAuthor = () => {
+    getUserMutate(id, {
+      onSuccess: (data) => {
+        setSelectedUser(data)
+        openUserDialog()
+      },
+    })
   }
 
   // 게시글 오픈
