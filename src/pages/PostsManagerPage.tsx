@@ -13,7 +13,7 @@ import { useSelectedUserStore } from "@/features/user/model"
 import { useUrlParams } from "@/features/post/lib"
 import { usePostsStore } from "@/entities/post/model/usePostsStore"
 import { useCommentsStore } from "@/entities/comment/model/useCommentsStore"
-import { getUser } from "@/entities/user/api/userApi"
+import { getUser } from "@/entities/user/api/usersApi"
 
 const PostsManager = () => {
   // 상태 관리
