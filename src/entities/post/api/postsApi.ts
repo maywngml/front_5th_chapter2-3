@@ -43,6 +43,6 @@ export const deletePost = async (id: Post["id"]) => {
 }
 
 export const getTags = async () => {
-  const data = await fetchApi<GetTagsResponse>({ method: "GET", url: "posts/tags" })
+  const data = await fetchApi<GetTagsResponse>({ method: "GET", url: "/posts/tags" })
   return data
 }
