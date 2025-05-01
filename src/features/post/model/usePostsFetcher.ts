@@ -1,40 +1,57 @@
 import { useCallback } from "react"
+import { useGetPostsWithUser, useGetPostsByTagWithUser } from "./usePostsQuery"
 import { usePostsStore } from "@/entities/post/model/usePostsStore"
 import { useUrlParams } from "../lib"
-import { getPostsByTagWithUser, getPostsWithUser } from "../api/postsApi"
 
 export const usePostsFetcher = () => {
+  const { mutate: getPostsWithUserMutate } = useGetPostsWithUser()
+  const { mutate: getPostsByTagWithUserMutate } = useGetPostsByTagWithUser()
   const { setIsLoading, setPosts } = usePostsStore()
   const { limit, skip } = useUrlParams()
 
   // 게시물 가져오기
-  const fetchPostsWithUser = useCallback(async () => {
+  const fetchPostsWithUser = useCallback(() => {
     setIsLoading(true)
-    try {
-      const posts = await getPostsWithUser(`?limit=${limit}&skip=${skip}`, "?limit=0&select=username,image")
-      setPosts(posts)
-    } catch (e) {
-      console.error("게시물 가져오기 오류:", e)
-    } finally {
-      setIsLoading(false)
-    }
+
+    getPostsWithUserMutate(
+      {
+        postParams: `?limit=${limit}&skip=${skip}`,
+        userParams: "?limit=0&select=username,image",
+      },
+      {
+        onSuccess: (data) => {
+          setPosts(data)
+        },
+        onSettled: () => {
+          setIsLoading(false)
+        },
+      },
+    )
   }, [limit, skip, setIsLoading, setPosts])
 
   // 태그별 게시물 가져오기
   const fetchPostsByTagWithUser = useCallback(
-    async (tag: string) => {
+    (tag: string) => {
       if (!tag || tag === "all") {
         fetchPostsWithUser()
         return
       }
+
       setIsLoading(true)
-      try {
-        const postsWithUsers = await getPostsByTagWithUser(tag, "?limit=0&select=username,image")
-        setPosts(postsWithUsers)
-      } catch (error) {
-        console.error("태그별 게시물 가져오기 오류:", error)
-      }
-      setIsLoading(false)
+      getPostsByTagWithUserMutate(
+        {
+          tag,
+          userParams: "?limit=0&select=username,image",
+        },
+        {
+          onSuccess: (data) => {
+            setPosts(data)
+          },
+          onSettled: () => {
+            setIsLoading(false)
+          },
+        },
+      )
     },
     [fetchPostsWithUser, setIsLoading, setPosts],
   )

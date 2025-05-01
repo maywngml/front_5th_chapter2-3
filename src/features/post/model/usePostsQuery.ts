@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
+import { getPostsWithUser, getPostsByTagWithUser } from "../api/postsApi"
 import {
   addPost,
   updatePost,
@@ -61,5 +62,24 @@ export const useGetPostsTags = (tag: string) => {
     queryKey: [tagQueryKeys.search(), tag],
     queryFn: () => getPostsByTag(tag),
     enabled: tag !== "all" && !!tag,
+  })
+}
+// 저자 정보와 함께 게시물 가져오기
+export const useGetPostsWithUser = () => {
+  return useMutation({
+    mutationFn: ({ postParams, userParams }: { postParams: string; userParams: string }) =>
+      getPostsWithUser(postParams, userParams),
+    onError: (e) => {
+      console.error("게시물 가져오기 오류:", e)
+    },
+  })
+}
+//  저자 정보와 함께 태그별 게시물 가져오기
+export const useGetPostsByTagWithUser = () => {
+  return useMutation({
+    mutationFn: ({ tag, userParams }: { tag: string; userParams: string }) => getPostsByTagWithUser(tag, userParams),
+    onError: (e) => {
+      console.error("태그별 게시물 가져오기 오류:", e)
+    },
   })
 }
