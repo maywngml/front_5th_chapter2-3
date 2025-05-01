@@ -1,18 +1,11 @@
 import { useEffect, useState } from "react"
 import { Plus } from "lucide-react"
-import {
-  AddPostDialog,
-  PostDetailDialog,
-  EditPostDialog,
-  PostFilterSection,
-  PostPagination,
-  PostTableRow,
-} from "@/features/post/ui"
+import { PostTable } from "@/widgets/post/ui"
+import { AddPostDialog, PostDetailDialog, EditPostDialog, PostFilterSection, PostPagination } from "@/features/post/ui"
 import { AddCommentDialog, EditCommentDialog } from "@/features/comment/ui"
 import { UserDialog } from "@/features/user/ui"
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/Card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select"
-import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/shared/ui/Table"
+
 import { Button, Loading } from "@/shared/ui"
 import { usePostDialog } from "@/features/post/model/PostDialogContext"
 import { useUrlParams } from "@/features/post/lib"
@@ -21,10 +14,10 @@ import { usePostsStore } from "@/entities/post/model/usePostsStore"
 
 const PostsManager = () => {
   // 상태 관리
-  const { posts, total, setPosts } = usePostsStore()
+  const { setPosts } = usePostsStore()
   const { openAddPostDialog } = usePostDialog()
 
-  const { skip, limit, tag: selectedTag, sortBy, sortOrder, updateParams } = useUrlParams()
+  const { skip, limit, tag: selectedTag, sortBy, sortOrder } = useUrlParams()
 
   const [loading, setLoading] = useState(false)
 
@@ -72,26 +65,6 @@ const PostsManager = () => {
     }
   }, [skip, limit, sortBy, sortOrder, selectedTag])
 
-  // 게시물 테이블 렌더링
-  const renderPostTable = () => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[50px]">ID</TableHead>
-          <TableHead>제목</TableHead>
-          <TableHead className="w-[150px]">작성자</TableHead>
-          <TableHead className="w-[150px]">반응</TableHead>
-          <TableHead className="w-[150px]">작업</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {posts.map((post) => (
-          <PostTableRow post={post} key={`post-table-row-${post.id}`} />
-        ))}
-      </TableBody>
-    </Table>
-  )
-
   return (
     <Card className="w-full max-w-6xl mx-auto">
       <CardHeader>
@@ -112,7 +85,7 @@ const PostsManager = () => {
             fetchPostsByTag={fetchPostsByTag}
           />
           {/* 게시물 테이블 */}
-          {loading ? <Loading /> : renderPostTable()}
+          {loading ? <Loading /> : <PostTable />}
 
           {/* 페이지네이션 */}
           <PostPagination />
