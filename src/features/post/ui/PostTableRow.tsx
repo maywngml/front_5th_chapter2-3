@@ -71,7 +71,7 @@ export const PostTableRow = ({ post }: PostTableRowProps) => {
   }
 
   // 게시물 삭제
-  const handleClickDelete = async () => {
+  const handleClickDelete = () => {
     deletePostMutate(id, {
       onSuccess: () => {
         deletePost(id)
