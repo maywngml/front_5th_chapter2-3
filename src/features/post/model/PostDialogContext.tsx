@@ -74,7 +74,7 @@ export const PostDialogProvider = ({ children }: { children: ReactNode }) => {
 export const usePostDialog = () => {
   const context = useContext(PostDialogContext)
   if (context === undefined) {
-    throw new Error("usePostDialogContext must be used within an NotificationProvider")
+    throw new Error("usePostDialogContext must be used within a PostDialogProvider")
   }
   return context
 }

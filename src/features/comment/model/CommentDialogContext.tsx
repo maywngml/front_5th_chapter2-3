@@ -56,7 +56,7 @@ export const CommentDialogProvider = ({ children }: { children: ReactNode }) => 
 export const useCommentDialog = () => {
   const context = useContext(CommentDialogContext)
   if (context === undefined) {
-    throw new Error("useCommentDialogContext must be used within an NotificationProvider")
+    throw new Error("useCommentDialogContext must be used within an CommentDialogProvider")
   }
   return context
 }

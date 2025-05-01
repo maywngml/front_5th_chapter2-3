@@ -35,7 +35,7 @@ export const UserDialogProvider = ({ children }: { children: ReactNode }) => {
 export const useUserDialog = () => {
   const context = useContext(UserDialogContext)
   if (context === undefined) {
-    throw new Error("useUserDialogContext must be used within an NotificationProvider")
+    throw new Error("useUserDialogContext must be used within an UserDialogProvider")
   }
   return context
 }
