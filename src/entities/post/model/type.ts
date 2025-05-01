@@ -62,8 +62,10 @@ export interface PostsUrlParams {
   tag?: string
 }
 
-export interface GetTagsResponse {
+export interface Tag {
   name: string
   slug: string
   url: string
 }
+
+export type GetTagsResponse = Tag[]

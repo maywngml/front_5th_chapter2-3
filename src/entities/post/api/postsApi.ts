@@ -13,8 +13,13 @@ export const getPosts = async (params: string) => {
   return data
 }
 
-export const fetchSearchedPosts = async (params: string) => {
-  const data = await fetchApi<GetPostsResponse>({ method: "GET", url: `/posts${params}` })
+export const getPostsByTag = async (tag: string) => {
+  const data = await fetchApi<GetPostsResponse>({ method: "GET", url: `/posts/tag${tag}` })
+  return data
+}
+
+export const fetchSearchedPosts = async (searchQuery: string) => {
+  const data = await fetchApi<GetPostsResponse>({ method: "GET", url: `/posts/search?q=${searchQuery}` })
   return data
 }
 
