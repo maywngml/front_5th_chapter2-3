@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react"
+import { ChangeEvent, KeyboardEvent } from "react"
 import { Search } from "lucide-react"
 import { Input } from "@/shared/ui"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select"
@@ -35,12 +35,17 @@ export const PostFilterSection = () => {
 
   const handleChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
     updateParams({ search: e.target.value })
-    searchPosts()
   }
 
   const handleChangeTag = (value: string) => {
-    fetchPostsByTagWithUser(value)
     updateParams({ tag: value })
+    fetchPostsByTagWithUser(value)
+  }
+
+  const handleKeyDownSearch = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      searchPosts()
+    }
   }
 
   const handleChangeSortBy = (value: string) => {
@@ -58,7 +63,13 @@ export const PostFilterSection = () => {
       <div className="flex-1">
         <div className="relative">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="게시물 검색..." className="pl-8" value={searchQuery} onChange={handleChangeSearch} />
+          <Input
+            placeholder="게시물 검색..."
+            className="pl-8"
+            value={searchQuery}
+            onChange={handleChangeSearch}
+            onKeyDown={handleKeyDownSearch}
+          />
         </div>
       </div>
       <Select value={selectedTag} onValueChange={handleChangeTag}>
