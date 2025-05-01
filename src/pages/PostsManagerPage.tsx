@@ -1,30 +1,22 @@
 import { useEffect, useState } from "react"
-import { Edit2, MessageSquare, Plus, Search, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
+import { Plus, Search } from "lucide-react"
 import { AddPostDialog, PostDetailDialog, EditPostDialog, PostTableRow } from "@/features/post/ui"
 import { AddCommentDialog, EditCommentDialog } from "@/features/comment/ui"
 import { UserDialog } from "@/features/user/ui"
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/Card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/Table"
+import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/shared/ui/Table"
 import { Button, Input, Loading } from "@/shared/ui"
-import { useSelectedPostStore } from "@/features/post/model/useSelectedPostStore"
 import { usePostDialog } from "@/features/post/model/PostDialogContext"
-import { useSelectedUserStore } from "@/features/user/model"
 import { useUrlParams } from "@/features/post/lib"
 import { getPostsWithUser, getPostsByTagWithUser } from "@/features/post/api/postsApi"
 import { usePostsStore } from "@/entities/post/model/usePostsStore"
-import { useCommentsStore } from "@/entities/comment/model/useCommentsStore"
-import { getUser } from "@/entities/user/api/usersApi"
-import { deletePost as deletePostApi, getTags, fetchSearchedPosts } from "@/entities/post/api/postsApi"
-import { getComments } from "@/entities/comment/api/commentsApi"
+import { getTags, fetchSearchedPosts } from "@/entities/post/api/postsApi"
 
 const PostsManager = () => {
   // 상태 관리
-  const { posts, total, setPosts, deletePost } = usePostsStore()
-  const { setSelectedPost } = useSelectedPostStore()
-  const { comments, setComments } = useCommentsStore()
-  const { setSelectedUser } = useSelectedUserStore()
-  const { openAddPostDialog, openEditPostDialog, openPostDetailDialog } = usePostDialog()
+  const { posts, total, setPosts } = usePostsStore()
+  const { openAddPostDialog } = usePostDialog()
 
   const { skip, limit, search: searchQuery, tag: selectedTag, sortBy, sortOrder, updateParams } = useUrlParams()
 
@@ -106,45 +98,6 @@ const PostsManager = () => {
     setLoading(false)
   }
 
-  // 게시물 삭제
-  const handleClickDelete = async (id) => {
-    try {
-      await deletePostApi(id)
-      deletePost(id)
-    } catch (error) {
-      console.error("게시물 삭제 오류:", error)
-    }
-  }
-
-  // 댓글 가져오기
-  const fetchComments = async (postId) => {
-    if (comments[postId]) return // 이미 불러온 댓글이 있으면 다시 불러오지 않음
-    try {
-      const data = await getComments(postId)
-      setComments(postId, data.comments)
-    } catch (error) {
-      console.error("댓글 가져오기 오류:", error)
-    }
-  }
-
-  // 게시물 상세 보기
-  const openPostDetail = (post) => {
-    setSelectedPost(post)
-    fetchComments(post.id)
-    openPostDetailDialog()
-  }
-
-  // 사용자 모달 열기
-  const openUserModal = async (user) => {
-    try {
-      const response = await getUser(user.id)
-      setSelectedUser(response)
-      changeShowUserDialog()
-    } catch (error) {
-      console.error("사용자 정보 가져오기 오류:", error)
-    }
-  }
-
   useEffect(() => {
     fetchTags()
   }, [])
@@ -155,24 +108,7 @@ const PostsManager = () => {
     } else {
       fetchPosts()
     }
-
-    // updateURL()
   }, [skip, limit, sortBy, sortOrder, selectedTag])
-
-  // 하이라이트 함수 추가
-  const highlightText = (text: string, highlight: string) => {
-    if (!text) return null
-    if (!highlight.trim()) {
-      return <span>{text}</span>
-    }
-    const regex = new RegExp(`(${highlight})`, "gi")
-    const parts = text.split(regex)
-    return (
-      <span>
-        {parts.map((part, i) => (regex.test(part) ? <mark key={i}>{part}</mark> : <span key={i}>{part}</span>))}
-      </span>
-    )
-  }
 
   // 게시물 테이블 렌더링
   const renderPostTable = () => (
